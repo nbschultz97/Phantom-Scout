@@ -1,0 +1,6 @@
+logs/
+__pycache__/
+*.cap
+*.netxml
+*.csv
+*.kml
