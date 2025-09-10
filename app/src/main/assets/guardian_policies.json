@@ -1,4 +1,26 @@
-[
-  {"name": "Default", "policy": "baseline"},
-  {"name": "Strict", "policy": "all_radio_off"}
-]
+{
+  "profiles": ["Base","Patrol","NearOBJ"],
+  "rules": [
+    {
+      "id": "wifi_probes_patrol",
+      "when": { "profile": "Patrol", "self.probeRatePerMin": { ">": 0 } },
+      "leak": "Wi-Fi probe requests active in Patrol",
+      "severity": "HIGH",
+      "fix": ["OPEN_WIFI_SETTINGS","SUGGEST_WIFI_OFF"]
+    },
+    {
+      "id": "ble_on_patrol",
+      "when": { "profile": "Patrol", "self.ble.on": true },
+      "leak": "Bluetooth enabled under Patrol profile",
+      "severity": "MEDIUM",
+      "fix": ["OPEN_BT_SETTINGS","SUGGEST_BT_OFF"]
+    },
+    {
+      "id": "hotspot_any",
+      "when": { "self.hotspotOn": true },
+      "leak": "Phone hotspot is broadcasting",
+      "severity": "HIGH",
+      "fix": ["OPEN_HOTSPOT_SETTINGS","SUGGEST_DISABLE_HOTSPOT"]
+    }
+  ]
+}
