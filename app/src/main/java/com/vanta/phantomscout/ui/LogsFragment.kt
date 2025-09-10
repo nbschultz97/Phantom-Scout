@@ -16,10 +16,15 @@ class LogsFragment : Fragment() {
         store = LogStore(requireContext())
     }
 
-    fun toggleLogging(s: Snapshot, risk: Int) {
+    fun toggleLogging(
+        s: Snapshot,
+        risk: Int,
+        leaks: List<String> = emptyList(),
+        fixes: Map<String, Boolean> = emptyMap()
+    ) {
         if (!logging) logging = true
-        store.appendCsv(s, risk)
+        store.append(s, risk, leaks, fixes)
     }
 
-    fun export() = store.exportJson()
+    fun export() = store.exportAar()
 }

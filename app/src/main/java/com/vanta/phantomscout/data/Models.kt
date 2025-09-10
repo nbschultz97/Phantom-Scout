@@ -30,3 +30,11 @@ data class Snapshot(
     val bleMaxRssi get() = ble.maxOfOrNull { it.rssi } ?: -120
     val hiddenSsids get() = wifi.any { it.ssid.isEmpty() }
 }
+
+/** Log entry capturing full snapshot and any detected leaks/fix outcomes. */
+data class AarEntry(
+    val timestamp: Long,
+    val snapshot: Snapshot,
+    val leaks: List<String>,
+    val fixes: Map<String, Boolean>
+)
