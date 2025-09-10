@@ -38,9 +38,14 @@ class BleScanner(ctx: Context, scope: CoroutineScope) {
                 trySend(found.values.toList())
             }
         }
-        scanner?.startScan(null, settings, cb)
+        try {
+            scanner?.startScan(null, settings, cb)
+        } catch (e: SecurityException) {
+            close(e)
+            return@callbackFlow
+        }
         awaitClose { scanner?.stopScan(cb) }
-    }.stateIn(scope, SharingStarted.Eagerly, emptyList())
+    }.stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
 
     /** Current set of discovered adverts. */
     val adverts: StateFlow<List<BleAdvert>> = _adverts
