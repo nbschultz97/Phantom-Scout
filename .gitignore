@@ -4,3 +4,4 @@ __pycache__/
 *.netxml
 *.csv
 *.kml
+.gradle/
