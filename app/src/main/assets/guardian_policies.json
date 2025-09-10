@@ -1,0 +1,4 @@
+[
+  {"name": "Default", "policy": "baseline"},
+  {"name": "Strict", "policy": "all_radio_off"}
+]
