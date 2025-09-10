@@ -2,41 +2,52 @@ package com.vanta.phantomscout.sensing.wifi
 
 import android.content.Context
 import android.net.wifi.WifiManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import com.vanta.phantomscout.data.WifiBeacon
 import com.vanta.phantomscout.util.OuiLookup
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 
 /**
- * Passive Wi-Fi scan using system WiFiManager.
- * Designed for low-duty cycle polling (~10s) to conserve power.
+ * Passive Wi-Fi scanner using Android's [WifiManager].
+ * Polls every 12 seconds and emits results via [StateFlow].
  */
-class WifiScanner(private val ctx: Context) {
+class WifiScanner(ctx: Context, scope: CoroutineScope) {
     private val wifi = ctx.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
-    suspend fun scan(): List<WifiBeacon> = withContext(Dispatchers.IO) {
-        val results = wifi.scanResults
-        results.map {
-            WifiBeacon(
-                bssid = it.BSSID,
-                ssid = it.SSID ?: "",
-                channel = it.frequency.toChannel(),
-                width = it.channelWidth.toHz(),
-                rssi = it.level,
-                capabilities = it.capabilities,
-                vendor = OuiLookup.vendorFor(it.BSSID)
-            )
+    private val _beacons = MutableStateFlow<List<WifiBeacon>>(emptyList())
+    val beacons: StateFlow<List<WifiBeacon>> = _beacons.asStateFlow()
+
+    init {
+        scope.launch(Dispatchers.IO) {
+            while (isActive) {
+                _beacons.value = scan()
+                delay(12_000L)
+            }
         }
     }
 
-    /** Simple flow emitting scan results every [intervalMs]. */
-    fun scanFlow(intervalMs: Long = 10_000L): Flow<List<WifiBeacon>> = flow {
-        while (true) {
-            emit(scan())
-            kotlinx.coroutines.delay(intervalMs)
-        }
+    /** Perform a single scan converting results to [WifiBeacon] objects. */
+    suspend fun scan(): List<WifiBeacon> = withContext(Dispatchers.IO) {
+        wifi.scanResults
+            .distinctBy { it.BSSID }
+            .map {
+                WifiBeacon(
+                    bssid = it.BSSID,
+                    ssid = it.SSID ?: "",
+                    channel = it.frequency.toChannel(),
+                    width = it.channelWidth.toHz(),
+                    rssi = it.level,
+                    capabilities = it.capabilities,
+                    vendor = OuiLookup.vendorFor(it.BSSID)
+                )
+            }
     }
 }
 
@@ -53,3 +64,4 @@ private fun Int.toHz(): Int = when (this) {
     WifiManager.CHANNEL_WIDTH_160MHZ -> 160
     else -> 20
 }
+
