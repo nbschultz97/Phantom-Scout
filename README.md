@@ -22,6 +22,23 @@ Offline-first Wi-Fi/BLE scanning toolkit paving the way for CSI-based through-wa
 
 Keep Gradle caches (`~/.gradle`) and downloaded SDK packages on your dev box for offline rebuilds.
 
+## Pipeline
+1. **Capture radio data** – run `scan.sh` on a Linux host to dump nearby Wi‑Fi/BLE frames for offline analysis.
+2. **Parse logs** – feed the raw dump to `parse_wifi_log.py` to convert results into structured CSV ready for model ingestion.
+3. **Model hooks** – future drop‑in CSI pose models (e.g., WiPose, PassiveWiFiPose) will consume the parsed logs and render skeletal overlays.
+
+## Testing
+- **Unit tests / build check**
+  ```bash
+  gradle test
+  ```
+  Requires a local Android SDK (`ANDROID_HOME` or `local.properties`).
+- **APK build**
+  ```bash
+  gradle assembleDebug
+  ```
+  Produces `app/build/outputs/apk/debug/app-debug.apk` for sideloading.
+
 ## Roadmap
 ### MVP (v0.1)
 - [ ] Foreground ScanningService + notification
