@@ -3,5 +3,9 @@ __pycache__/
 *.cap
 *.netxml
 *.csv
+!oui.csv
+!app/src/main/assets/oui.csv
 *.kml
 .gradle/
+build/
+app/build/

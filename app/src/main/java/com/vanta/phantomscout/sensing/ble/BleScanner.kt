@@ -11,7 +11,7 @@ import com.vanta.phantomscout.data.BleAdvert
 import com.vanta.phantomscout.util.OuiLookup
 
 /** Low power BLE scanner using callbackFlow. */
-class BleScanner(ctx: Context) {
+class BleScanner(private val ctx: Context) {
     private val scanner: BluetoothLeScanner? =
         (ctx.getSystemService(Context.BLUETOOTH_SERVICE) as? android.bluetooth.BluetoothManager)?.adapter?.bluetoothLeScanner
 
@@ -23,8 +23,7 @@ class BleScanner(ctx: Context) {
                 val advert = BleAdvert(
                     address = addr,
                     rssi = result.rssi,
-                    manufacturer = result.scanRecord?.manufacturerSpecificData?.keyAt(0)
-                        ?.let { OuiLookup.vendorFor(addr) },
+                    manufacturer = OuiLookup.vendorFor(ctx, addr),
                     connectable = result.isConnectable
                 )
                 found[addr] = advert

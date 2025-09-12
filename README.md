@@ -1,5 +1,6 @@
-# Vantage Scanner (Phantom Scout scaffolding)
-Offline-first Wi-Fi/BLE scanning toolkit paving the way for CSI-based through-wall pose estimation.
+# Vantage Scanner
+Offline-first Wi-Fi/BLE signature monitor for stock Android handsets (ATAK, Galaxy S25).
+Helps operators see nearby emitters and spot their own leaks. CSI pose work lives in a separate project.
 
 ## Build & Install (Android)
 1. **Prepare environment**
@@ -23,9 +24,9 @@ Offline-first Wi-Fi/BLE scanning toolkit paving the way for CSI-based through-wa
 Keep Gradle caches (`~/.gradle`) and downloaded SDK packages on your dev box for offline rebuilds.
 
 ## Pipeline
-1. **Capture radio data** – run `scan.sh` on a Linux host to dump nearby Wi‑Fi/BLE frames for offline analysis.
-2. **Parse logs** – feed the raw dump to `parse_wifi_log.py` to convert results into structured CSV ready for model ingestion.
-3. **Model hooks** – future drop‑in CSI pose models (e.g., WiPose, PassiveWiFiPose) will consume the parsed logs and render skeletal overlays.
+1. **Capture radio data** – run `scan.sh` on a Linux host or use the Android app to sweep Wi‑Fi/BLE.
+2. **Parse logs** – feed the raw dump to `parse_wifi_log.py` to convert results into structured CSV with vendor IDs resolved via `oui.csv`.
+3. **Review** – import the CSV/JSON logs into your analysis toolset or the app's logs panel.
 
 ## Testing
 - **Unit tests / build check**
@@ -39,9 +40,12 @@ Keep Gradle caches (`~/.gradle`) and downloaded SDK packages on your dev box for
   ```
   Produces `app/build/outputs/apk/debug/app-debug.apk` for sideloading.
 
+## OUI cache
+Populate `oui.csv` (and the mirrored `app/src/main/assets/oui.csv`) with MAC prefixes and vendor names to flag known phones, drones, or radios without a network query.
+
 ## Roadmap
 ### MVP (v0.1)
-- [ ] Foreground ScanningService + notification
+- [ ] Foreground `ScanningService` + notification
 - [ ] Runtime permission flow
 - [ ] Wi-Fi scanner (12–15s) + list UI
 - [ ] BLE scanner (low-power) + list UI
