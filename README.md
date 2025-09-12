@@ -1,6 +1,6 @@
 # Vantage Scanner
 Offline-first Wi-Fi/BLE signature monitor for stock Android handsets (ATAK, Galaxy S25).
-Helps operators see nearby emitters and spot their own leaks. CSI pose work lives in a separate project.
+Helps operators see nearby emitters and spot their own leaks.
 
 ## Build & Install (Android)
 1. **Prepare environment**
