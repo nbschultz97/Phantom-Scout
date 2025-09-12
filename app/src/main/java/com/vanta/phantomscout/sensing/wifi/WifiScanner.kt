@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
  * Passive Wi-Fi scanner using Android's [WifiManager].
  * Polls every 12 seconds and emits results via [StateFlow].
  */
-class WifiScanner(ctx: Context, scope: CoroutineScope) {
+class WifiScanner(private val ctx: Context, scope: CoroutineScope) {
     private val wifi = ctx.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
     private val _beacons = MutableStateFlow<List<WifiBeacon>>(emptyList())
@@ -45,7 +45,7 @@ class WifiScanner(ctx: Context, scope: CoroutineScope) {
                     width = it.channelWidth.toHz(),
                     rssi = it.level,
                     capabilities = it.capabilities,
-                    vendor = OuiLookup.vendorFor(it.BSSID)
+                    vendor = OuiLookup.vendorFor(ctx, it.BSSID)
                 )
             }
     }
